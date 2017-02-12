@@ -35,10 +35,8 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/Theme.AppCompat"
-            >
-
-        </activity>
+            android:theme="@style/Theme.AppCompat"></activity>
+        <activity android:name=".PostActivity"></activity>
     </application>
 
 </manifest>
