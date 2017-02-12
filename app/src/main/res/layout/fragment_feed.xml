@@ -1,0 +1,71 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:background="@color/feed_bg"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.othree.wajeun.FeedFragment">
+
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recylerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            >
+
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/multiple_actions_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        fab:fab_addButtonColorNormal="@color/white"
+        fab:fab_addButtonColorPressed="@color/primary_text"
+        fab:fab_addButtonSize="normal"
+        fab:fab_addButtonPlusIconColor="@color/primary"
+        fab:fab_addButtonStrokeVisible="false"
+        fab:fab_expandDirection="up"
+        android:layout_gravity="bottom|right"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_colorPressed="@color/primary_text"
+            fab:fab_size="normal"
+            android:id="@+id/search_fab"
+            fab:fab_icon="@drawable/ic_search_black_24dp"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_colorPressed="@color/primary_text"
+            fab:fab_size="normal"
+            android:id="@+id/post_fab"
+            fab:fab_icon="@drawable/ic_create_black_24dp"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_settings_black_24dp"
+            fab:fab_colorNormal="@color/white"
+            android:id="@+id/settings_fab"
+            fab:fab_colorPressed="@color/primary_text"
+            fab:fab_size="normal"/>
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+</FrameLayout>
