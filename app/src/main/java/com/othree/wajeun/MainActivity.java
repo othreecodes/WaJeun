@@ -29,12 +29,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.security.AuthProvider;
 import java.util.Arrays;
 
 import butterknife.Bind;
@@ -134,16 +136,33 @@ public class MainActivity extends AppCompatActivity {
         anonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent in = new Intent(MainActivity.this, HomeActivity.class);
-                startActivity(in);
-//                LoginAnonymously();
+//                Intent in = new Intent(MainActivity.this, HomeActivity.class);
+//                startActivity(in);
+                LoginAnonymously();
             }
         });
 
     }
 
     private void LoginAnonymously() {
-        mAuth.signInAnonymously();
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInAnonymously", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
     }
 
 

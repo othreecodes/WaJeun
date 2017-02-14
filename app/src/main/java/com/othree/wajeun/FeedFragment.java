@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -153,6 +154,11 @@ public class FeedFragment extends Fragment {
             public void onClick(View view) {
                 if(!happening.getText().toString().isEmpty()){
 
+                    if(FirebaseAuth.getInstance().getCurrentUser().isAnonymous()){
+                        Toast.makeText(getContext(),"You need to Login to be able to post",Toast.LENGTH_LONG)
+                                .show();
+                        return;
+                    }
                     Feed feed1 = new Feed();
                     feed1.setName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                     feed1.setPictureURL(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
