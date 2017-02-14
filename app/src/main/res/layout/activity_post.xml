@@ -4,26 +4,35 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <EditText
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:counterEnabled="true"
+        app:counterMaxLength="200"
+        >
+    <android.support.design.widget.TextInputEditText
         android:id="@+id/happening"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="5dp"
         android:padding="16dp"
         android:background="@color/primary_text"
         android:textColor="@color/white"
         android:gravity="top"
         android:hint="@string/update_hint"
         android:inputType="textMultiLine|textLongMessage"
-        android:minHeight="102dp" />
+        android:minHeight="102dp"
+        />
+    </android.support.design.widget.TextInputLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_below="@+id/happening"
+        android:layout_below="@+id/textContainer"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="@color/white"
+        android:background="@color/primary_text"
         android:gravity="center_vertical">
         <ImageButton
             android:id="@+id/post"

@@ -38,8 +38,12 @@ public class FeedFragmentAdapter extends RecyclerView.Adapter<FeedFragmentAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Feed feed = feeds.get(position);
-        Glide.with(this.context).load(feed.pictureURL).into(holder.profilePic)
-        .onLoadStarted(Drawable.createFromPath("drawable/place.png"));
+
+        Glide.with(this.context).load(feed.pictureURL)
+                .placeholder(this.context.getResources().getDrawable(R.drawable.place))
+                .crossFade()
+                .into(holder.profilePic);
+
 
 
 
@@ -49,8 +53,11 @@ public class FeedFragmentAdapter extends RecyclerView.Adapter<FeedFragmentAdapte
         holder.txtStatusMsg.setText(feed.post);
 
         if(!feed.image.isEmpty()) {
-            Glide.with(this.context).load(feed.image).into(holder.feedImage)
-            .onLoadStarted(Drawable.createFromPath("drawable/place.png"));;
+            Glide.with(this.context).load(feed.image)
+                    .placeholder(this.context.getResources().getDrawable(R.drawable.place))
+                    .crossFade()
+                    .into(holder.feedImage);
+
             holder.feedImage.setVisibility(View.VISIBLE);
         }
         else

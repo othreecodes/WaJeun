@@ -4,6 +4,7 @@ package com.othree.wajeun;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -147,12 +148,13 @@ public class FeedFragment extends Fragment {
         LayoutInflater ing = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View customView = ing.inflate(R.layout.activity_post, null);
         ImageButton postImageButton= (ImageButton) customView.findViewById(R.id.post);
-        final EditText happening = (EditText) customView.findViewById(R.id.happening);
+        final TextInputEditText happening = (TextInputEditText) customView.findViewById(R.id.happening);
+
 
         postImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!happening.getText().toString().isEmpty()){
+                if(!happening.getText().toString().isEmpty()&&!happening.isDirty()){
 
                     if(FirebaseAuth.getInstance().getCurrentUser().isAnonymous()){
                         Toast.makeText(getContext(),"You need to Login to be able to post",Toast.LENGTH_LONG)
@@ -171,6 +173,9 @@ public class FeedFragment extends Fragment {
                     happening.getText().clear();
                     dialog.dismiss();
 
+                }else{
+                    Toast.makeText(getActivity(),"Action not allowed",Toast.LENGTH_SHORT)
+                    .show();
                 }
             }
         });
@@ -186,6 +191,7 @@ public class FeedFragment extends Fragment {
          dialog = new BottomDialog.Builder(getContext())
                         .setTitle("New Post")
                         .setCustomView(customView)
+
                         .show();
 
             }
