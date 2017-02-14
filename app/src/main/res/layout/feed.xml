@@ -51,7 +51,10 @@
                     android:textStyle="bold"
                     android:text="Obi Uchenna David"/>
 
+
+
                 <TextView
+                    android:drawableLeft="@drawable/ic_event_black_18dp"
                     android:id="@+id/timestamp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"

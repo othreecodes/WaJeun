@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,9 +8,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.othree.wajeun.FeedFragment">
 
-<include
-    layout="@layout/activity_post"
-    />
+
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
@@ -72,4 +71,4 @@
             fab:fab_size="normal"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
-</RelativeLayout>
+</FrameLayout>

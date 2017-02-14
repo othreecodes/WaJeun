@@ -1,6 +1,7 @@
 package com.othree.wajeun;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,9 +11,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.github.javiersantos.bottomdialogs.BottomDialog;
+import com.google.firebase.auth.FirebaseAuth;
 import com.nightonke.boommenu.BoomButtons.ButtonPlaceEnum;
 import com.nightonke.boommenu.BoomButtons.SimpleCircleButton;
 import com.nightonke.boommenu.BoomMenuButton;
@@ -55,6 +60,7 @@ public class FeedFragment extends Fragment {
     @Bind(R.id.multiple_actions_left)
     FloatingActionsMenu menu;
 
+    BottomDialog dialog = null;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,18 +92,9 @@ public class FeedFragment extends Fragment {
             }
         });
 
- postFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                menu.collapse();
-
-                Intent in = new Intent(getActivity(),PostActivity.class);
-                startActivity(in);
-            }
-        });
 
 
-        List<Feed> feeds = new ArrayList<>();
+        final List<Feed> feeds = new ArrayList<>();
 
         Feed feed1 = new Feed();
         feed1.setName("God");
@@ -139,11 +136,52 @@ public class FeedFragment extends Fragment {
 //        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
 
 
-        FeedFragmentAdapter feedFragmentAdapter = new FeedFragmentAdapter(feeds,getContext());
+        final FeedFragmentAdapter feedFragmentAdapter = new FeedFragmentAdapter(feeds,getContext());
 
         recyclerView.setAdapter(feedFragmentAdapter);
 
         feedFragmentAdapter.notifyDataSetChanged();
+
+
+        LayoutInflater ing = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View customView = ing.inflate(R.layout.activity_post, null);
+        ImageButton postImageButton= (ImageButton) customView.findViewById(R.id.post);
+        final EditText happening = (EditText) customView.findViewById(R.id.happening);
+
+        postImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!happening.getText().toString().isEmpty()){
+
+                    Feed feed1 = new Feed();
+                    feed1.setName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                    feed1.setPictureURL(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
+                    feed1.setTimestamp("Now");
+                    feed1.setPost(happening.getText().toString());
+                    feed1.setLink("");
+                    feed1.setImage("");
+                    feeds.add(0,feed1);
+                    feedFragmentAdapter.notifyDataSetChanged();
+                    dialog.dismiss();
+                }
+            }
+        });
+
+
+        postFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                menu.collapse();
+
+
+
+         dialog = new BottomDialog.Builder(getContext())
+                        .setTitle("New Post")
+                        .setCustomView(customView)
+                        .show();
+
+            }
+        });
 
 
 
