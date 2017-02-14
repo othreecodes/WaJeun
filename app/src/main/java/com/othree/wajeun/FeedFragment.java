@@ -168,7 +168,9 @@ public class FeedFragment extends Fragment {
                     feed1.setImage("");
                     feeds.add(0,feed1);
                     feedFragmentAdapter.notifyDataSetChanged();
+                    happening.getText().clear();
                     dialog.dismiss();
+
                 }
             }
         });
