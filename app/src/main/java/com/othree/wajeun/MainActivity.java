@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");

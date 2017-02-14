@@ -1,13 +1,16 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:droidicon="http://schemas.android.com/apk/res-auto"
     android:background="@color/feed_bg"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.othree.wajeun.FeedFragment">
 
-
+<include
+    layout="@layout/activity_post"
+    />
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
@@ -56,6 +59,7 @@
             fab:fab_colorPressed="@color/primary_text"
             fab:fab_size="normal"
             android:id="@+id/post_fab"
+
             fab:fab_icon="@drawable/ic_create_black_24dp"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -68,4 +72,4 @@
             fab:fab_size="normal"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
-</FrameLayout>
+</RelativeLayout>

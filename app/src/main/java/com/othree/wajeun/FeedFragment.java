@@ -86,6 +86,16 @@ public class FeedFragment extends Fragment {
             }
         });
 
+ postFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                menu.collapse();
+
+                Intent in = new Intent(getActivity(),PostActivity.class);
+                startActivity(in);
+            }
+        });
+
 
         List<Feed> feeds = new ArrayList<>();
 

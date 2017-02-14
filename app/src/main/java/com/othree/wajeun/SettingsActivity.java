@@ -18,6 +18,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.List;
@@ -150,6 +151,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         loadHeadersFromResource(R.xml.pref_headers, target);
     }
 
+    @Override
+    public void onHeaderClick(Header header, int position) {
+        if(header.id == R.id.about_header){
+
+            startActivity(new Intent(SettingsActivity.this, AboutActivity.class));
+
+        }
+        super.onHeaderClick(header, position);
+    }
+
     /**
      * This method stops fragment injection in malicious applications.
      * Make sure to deny any unknown fragments here.
@@ -158,6 +169,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName);
 
+    }
+
+    @Override
+    public boolean onNavigateUp() {
+
+        finish();
+        return true;
     }
 
     /**
@@ -185,6 +203,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             int id = item.getItemId();
             if (id == android.R.id.home) {
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
+                Log.e("home","gomeee");
                 return true;
             }
             return super.onOptionsItemSelected(item);

@@ -2,11 +2,15 @@
 
     <!-- These settings headers are only used on tablets. -->
 
+
     <header
-        android:fragment="com.othree.wajeun.SettingsActivity$GeneralPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
-        android:title="@string/pref_header_general"
+        android:title="About"
+        android:id="@+id/about_header"
             />
+
+
+
 
 
 </preference-headers>
