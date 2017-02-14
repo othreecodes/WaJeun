@@ -37,6 +37,7 @@ dependencies {
     compile 'com.stephentuso:welcome:1.1.0'
     compile 'com.google.firebase:firebase-auth:9.8.00'
     compile 'com.google.android.gms:play-services-auth:9.8.00'
+    compile 'com.google.firebase:firebase-messaging:9.8.00'
     compile 'com.facebook.android:facebook-android-sdk:4.0.0'
     compile 'com.github.devlight.navigationtabstrip:navigationtabstrip:+'
     compile 'com.android.support:support-v4:25.0.0'
