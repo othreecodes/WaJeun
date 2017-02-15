@@ -37,6 +37,7 @@ import com.nightonke.boommenu.Piece.PiecePlaceEnum;
 import com.othree.wajeun.R;
 import com.othree.wajeun.adapters.FeedFragmentAdapter;
 import com.othree.wajeun.models.Feed;
+import com.othree.wajeun.models.User;
 import com.r0adkll.slidr.Slidr;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
@@ -76,6 +77,8 @@ public class FeedFragment extends Fragment {
     BottomDialog dialog = null;
     List<Feed> feeds ;
     FeedFragmentAdapter feedFragmentAdapter;
+
+    DatabaseReference usersREF;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -84,7 +87,7 @@ public class FeedFragment extends Fragment {
 
           database = FirebaseDatabase.getInstance();
           feedRef = database.getReference("feeds");
-
+            usersREF = database.getReference("users");
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -227,11 +230,34 @@ public class FeedFragment extends Fragment {
         feedRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Feed post = dataSnapshot.getValue(Feed.class);
+                final Feed post = dataSnapshot.getValue(Feed.class);
                 post.setTimestamp(new TimeAgo().getTimeAgo(new Date(post.getTimestamp())));
-                feeds.add(0,post);
-                feedFragmentAdapter.notifyDataSetChanged();
-                Log.e("Get Dataii", post.getKey());
+
+
+                usersREF.child(post.getPoster()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.exists()) {
+                            User user = dataSnapshot.getValue(User.class);
+                            post.setPictureURL(user.getPhotoUrl());
+                            feeds.add(0, post);
+                            feedFragmentAdapter.notifyDataSetChanged();
+                        }
+                        else{
+                            feeds.add(0, post);
+                            feedFragmentAdapter.notifyDataSetChanged();
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
             }
 
             @Override

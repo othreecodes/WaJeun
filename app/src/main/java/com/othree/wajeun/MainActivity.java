@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.othree.wajeun.models.User;
 
 import java.security.AuthProvider;
 import java.util.Arrays;
@@ -129,7 +130,14 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG,user.getProviderId());
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
 
-//                    usersREF.child(user.getUid()).setValue(user);
+                    User userToStore = new User();
+                    userToStore.displayName = user.getDisplayName();
+                    userToStore.email = user.getEmail();
+                    userToStore.photoUrl = user.getPhotoUrl().toString();
+                    userToStore.uid = user.getUid();
+                    userToStore.provider = user.getProviderId();
+
+                    usersREF.child(userToStore.getUid()).setValue(userToStore);
 
                     Intent in = new Intent(MainActivity.this, HomeActivity.class);
                     startActivity(in);
