@@ -21,7 +21,8 @@
         android:textColor="@color/white"
         android:gravity="top"
         android:hint="@string/update_hint"
-        android:inputType="textMultiLine|textLongMessage"
+        android:inputType="textFilter|textMultiLine"
+        android:maxLength="200"
         android:minHeight="102dp"
         />
     </android.support.design.widget.TextInputLayout>

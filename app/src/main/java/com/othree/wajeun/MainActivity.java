@@ -35,6 +35,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.security.AuthProvider;
 import java.util.Arrays;
@@ -56,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
     String cID = "471103291529-ufkhd8i1ij6o8u19fcd29mhsi5ncje3e.apps.googleusercontent.com";
+    FirebaseDatabase database;
+    DatabaseReference usersREF;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.layout_main);
         ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        usersREF = database.getReference("users");
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(cID)
                 .requestEmail()
@@ -114,11 +123,13 @@ public class MainActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG,user.getProviderId());
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+
+//                    usersREF.child(user.getUid()).setValue(user);
 
                     Intent in = new Intent(MainActivity.this, HomeActivity.class);
                     startActivity(in);
@@ -132,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
                 
             }
         };
+
+
         
         anonButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -6,12 +6,32 @@ package com.othree.wajeun.models;
 
 public class Feed {
 
+    public String key;
     public String pictureURL;
     public String name;
     public String post;
     public String link;
     public String image;
     public String timestamp;
+    public String poster;
+
+    public Feed(){}
+
+    public String getPoster() {
+        return poster;
+    }
+
+    public void setPoster(String poster) {
+        this.poster = poster;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public String getTimestamp() {
         return timestamp;
@@ -60,4 +80,6 @@ public class Feed {
     public void setImage(String image) {
         this.image = image;
     }
+
+
 }

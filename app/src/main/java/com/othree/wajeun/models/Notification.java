@@ -9,6 +9,7 @@ public class Notification {
     String Date;
     String title;
 
+
     public String getTitle() {
         return title;
     }

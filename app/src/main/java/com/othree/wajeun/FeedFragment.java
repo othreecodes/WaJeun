@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.choota.dev.ctimeago.TimeAgo;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nightonke.boommenu.BoomButtons.ButtonPlaceEnum;
 import com.nightonke.boommenu.BoomButtons.SimpleCircleButton;
 import com.nightonke.boommenu.BoomMenuButton;
@@ -32,6 +41,7 @@ import com.r0adkll.slidr.Slidr;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
@@ -61,13 +71,19 @@ public class FeedFragment extends Fragment {
     FloatingActionButton postFab;
     @Bind(R.id.multiple_actions_left)
     FloatingActionsMenu menu;
-
+    FirebaseDatabase database;
+    DatabaseReference feedRef;
     BottomDialog dialog = null;
+    List<Feed> feeds ;
+    FeedFragmentAdapter feedFragmentAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_feed, container, false);
         ButterKnife.bind(this, v);
+
+          database = FirebaseDatabase.getInstance();
+          feedRef = database.getReference("feeds");
 
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -96,7 +112,7 @@ public class FeedFragment extends Fragment {
 
 
 
-        final List<Feed> feeds = new ArrayList<>();
+        feeds = new ArrayList<>();
 
         Feed feed1 = new Feed();
         feed1.setName("God");
@@ -138,7 +154,7 @@ public class FeedFragment extends Fragment {
 //        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
 
 
-        final FeedFragmentAdapter feedFragmentAdapter = new FeedFragmentAdapter(feeds,getContext());
+         feedFragmentAdapter = new FeedFragmentAdapter(feeds,getContext());
 
         recyclerView.setAdapter(feedFragmentAdapter);
 
@@ -155,21 +171,28 @@ public class FeedFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(!happening.getText().toString().isEmpty()&&!happening.isDirty()){
-
-                    if(FirebaseAuth.getInstance().getCurrentUser().isAnonymous()){
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if(user.isAnonymous()){
                         Toast.makeText(getContext(),"You need to Login to be able to post",Toast.LENGTH_LONG)
                                 .show();
                         return;
                     }
+
+                    Date now = new Date();
+                    TimeAgo timeAgo = new TimeAgo();
+                    String result = timeAgo.getTimeAgo(now);
+
                     Feed feed1 = new Feed();
                     feed1.setName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                     feed1.setPictureURL(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
-                    feed1.setTimestamp("Now");
+                    feed1.setTimestamp(now.toString());
                     feed1.setPost(happening.getText().toString());
                     feed1.setLink("");
                     feed1.setImage("");
-                    feeds.add(0,feed1);
-                    feedFragmentAdapter.notifyDataSetChanged();
+                    feed1.setPoster(user.getUid());
+                    DatabaseReference f =feedRef.push();
+                    feed1.setKey(f.getKey());
+                    f.setValue(feed1);
                     happening.getText().clear();
                     dialog.dismiss();
 
@@ -198,8 +221,69 @@ public class FeedFragment extends Fragment {
         });
 
 
+//        init();
+
+
+        feedRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Feed post = dataSnapshot.getValue(Feed.class);
+                post.setTimestamp(new TimeAgo().getTimeAgo(new Date(post.getTimestamp())));
+                feeds.add(0,post);
+                feedFragmentAdapter.notifyDataSetChanged();
+                Log.e("Get Dataii", post.getKey());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         return v;
+    }
+
+    void init(){
+
+
+        feedRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e("Count " ,""+dataSnapshot.getChildrenCount());
+
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    Feed post = postSnapshot.getValue(Feed.class);
+                    post.setTimestamp(new TimeAgo().getTimeAgo(new Date(post.getTimestamp())));
+                    feeds.add(0,post);
+                    feedFragmentAdapter.notifyDataSetChanged();
+                    Log.e("Get Datawe", post.getKey());
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
 }
