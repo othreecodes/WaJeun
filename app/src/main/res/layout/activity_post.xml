@@ -20,14 +20,16 @@
         android:background="@color/primary_text"
         android:textColor="@color/white"
         android:gravity="top"
-        android:hint="@string/update_hint"
+
         android:inputType="textFilter|textMultiLine"
         android:maxLength="200"
         android:minHeight="102dp"
         />
     </android.support.design.widget.TextInputLayout>
 
+
     <RelativeLayout
+        android:id="@+id/pla"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_below="@+id/textContainer"
@@ -59,41 +61,53 @@
             android:tint="@android:color/darker_gray"
             app:srcCompat="@drawable/ic_photo" />
 
-        <ImageButton
-            android:id="@+id/addLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_toEndOf="@+id/addPhoto"
-            android:padding="8dp"
-            android:clickable="true"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="@string/image"
-            android:tint="@android:color/darker_gray"
-            app:srcCompat="@drawable/ic_place" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/addLocation"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:layout_toEndOf="@+id/addPhoto"-->
+            <!--android:padding="8dp"-->
+            <!--android:clickable="true"-->
+            <!--android:background="?attr/selectableItemBackground"-->
+            <!--android:contentDescription="@string/image"-->
+            <!--android:tint="@android:color/darker_gray"-->
+            <!--app:srcCompat="@drawable/ic_place" />-->
 
-        <ImageButton
-            android:id="@+id/tagFriends"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_toEndOf="@+id/addLocation"
-            android:padding="8dp"
-            android:clickable="true"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="@string/image"
-            android:tint="@android:color/darker_gray"
-            app:srcCompat="@drawable/ic_tag" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/tagFriends"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:layout_toEndOf="@+id/addLocation"-->
+            <!--android:padding="8dp"-->
+            <!--android:clickable="true"-->
+            <!--android:background="?attr/selectableItemBackground"-->
+            <!--android:contentDescription="@string/image"-->
+            <!--android:tint="@android:color/darker_gray"-->
+            <!--app:srcCompat="@drawable/ic_tag" />-->
 
-        <ImageButton
-            android:id="@+id/feeling"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_toEndOf="@+id/tagFriends"
-            android:padding="8dp"
-            android:clickable="true"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="@string/image"
-            android:tint="@android:color/darker_gray"
-            app:srcCompat="@drawable/ic_mood" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/feeling"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:layout_toEndOf="@+id/tagFriends"-->
+            <!--android:padding="8dp"-->
+            <!--android:clickable="true"-->
+            <!--android:background="?attr/selectableItemBackground"-->
+            <!--android:contentDescription="@string/image"-->
+            <!--android:tint="@android:color/darker_gray"-->
+            <!--app:srcCompat="@drawable/ic_mood" />-->
+        <!---->
+
     </RelativeLayout>
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="50dp"
+        android:id="@+id/postimg"
+        android:layout_height="70dp"
+        android:maxHeight="70dp"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/pla"
+        android:src="@drawable/place"
+        android:visibility="gone"
+        android:maxWidth="50dp"/>
 
 </RelativeLayout>

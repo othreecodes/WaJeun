@@ -1,8 +1,10 @@
 package com.othree.wajeun;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.nfc.Tag;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
@@ -40,9 +42,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.othree.wajeun.models.User;
 
 import java.security.AuthProvider;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import butterknife.Bind;
@@ -139,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
 
                     usersREF.child(userToStore.getUid()).setValue(userToStore);
 
+                    FirebaseMessaging.getInstance().subscribeToTopic(userToStore.getUid());
+
                     Intent in = new Intent(MainActivity.this, HomeActivity.class);
                     startActivity(in);
                     finish();
@@ -215,7 +221,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+void requestPermissions(){
+    int permission = ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA);
+    int permission2 = ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    int permission3 = ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CALL_PHONE);
+    ArrayList<String> permStrings = new ArrayList<>();
 
+    if(permission == PackageManager.PERMISSION_DENIED) {
+        permStrings.add(android.Manifest.permission.CAMERA);
+    }
+    if(permission2 == PackageManager.PERMISSION_DENIED) {
+        permStrings.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+    if(permission3 == PackageManager.PERMISSION_DENIED) {
+        permStrings.add(android.Manifest.permission.CALL_PHONE);
+    }
+    String[] stockArr = new String[permStrings.size()];
+    stockArr = permStrings.toArray(stockArr);
+
+
+    if(permStrings.size()>0){
+        ActivityCompat.requestPermissions(MainActivity.this,
+                stockArr,
+                1);
+
+    }
+
+}
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 

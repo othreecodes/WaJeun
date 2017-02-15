@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.othree.wajeun.R;
 import com.othree.wajeun.models.Feed;
-import com.wingjay.blurimageviewlib.BlurImageView;
+
 
 import java.util.List;
 

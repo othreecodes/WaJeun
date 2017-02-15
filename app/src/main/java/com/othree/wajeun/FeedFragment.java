@@ -3,10 +3,12 @@ package com.othree.wajeun;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +23,7 @@ import com.choota.dev.ctimeago.TimeAgo;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -29,6 +32,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.mvc.imagepicker.ImagePicker;
 import com.nightonke.boommenu.BoomButtons.ButtonPlaceEnum;
 import com.nightonke.boommenu.BoomButtons.SimpleCircleButton;
 import com.nightonke.boommenu.BoomMenuButton;
@@ -41,12 +50,15 @@ import com.othree.wajeun.models.User;
 import com.r0adkll.slidr.Slidr;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import it.gmariotti.recyclerview.adapter.AlphaAnimatorAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,8 +69,10 @@ public class FeedFragment extends Fragment {
     public FeedFragment() {
         // Required empty public constructor
     }
-//    @Bind(R.id.bmb)
+
+    //    @Bind(R.id.bmb)
 //    BoomMenuButton bmb;
+    Bitmap imagebitmap = null;
     View v;
     @Bind(R.id.recylerView)
     RecyclerView recyclerView;
@@ -75,19 +89,28 @@ public class FeedFragment extends Fragment {
     FirebaseDatabase database;
     DatabaseReference feedRef;
     BottomDialog dialog = null;
-    List<Feed> feeds ;
+    List<Feed> feeds;
     FeedFragmentAdapter feedFragmentAdapter;
-
+    FirebaseStorage storage;
+    AppCompatImageView imgView;
+    StorageReference storageRef;
     DatabaseReference usersREF;
+    StorageReference imagesRef;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_feed, container, false);
         ButterKnife.bind(this, v);
 
-          database = FirebaseDatabase.getInstance();
-          feedRef = database.getReference("feeds");
-            usersREF = database.getReference("users");
+        database = FirebaseDatabase.getInstance();
+        feedRef = database.getReference("feeds");
+        usersREF = database.getReference("users");
+
+        storage = FirebaseStorage.getInstance();
+
+        storageRef = storage.getReferenceFromUrl("gs://chow-37ac2.appspot.com");
+        imagesRef = storageRef.child("images");
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -108,11 +131,10 @@ public class FeedFragment extends Fragment {
             public void onClick(View view) {
                 menu.collapse();
 
-                Intent in = new Intent(getActivity(),SettingsActivity.class);
+                Intent in = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(in);
             }
         });
-
 
 
         feeds = new ArrayList<>();
@@ -149,34 +171,34 @@ public class FeedFragment extends Fragment {
         feeds.add(feed1);
 
 
-
-
         recyclerView.setHasFixedSize(false);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 //        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
 
 
-         feedFragmentAdapter = new FeedFragmentAdapter(feeds,getContext());
+        feedFragmentAdapter = new FeedFragmentAdapter(feeds, getContext());
 
-        recyclerView.setAdapter(feedFragmentAdapter);
+        final AlphaAnimatorAdapter animatorAdapter = new AlphaAnimatorAdapter(feedFragmentAdapter, recyclerView);
+
+        recyclerView.setAdapter(animatorAdapter);
 
         feedFragmentAdapter.notifyDataSetChanged();
 
 
         LayoutInflater ing = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View customView = ing.inflate(R.layout.activity_post, null);
-        ImageButton postImageButton= (ImageButton) customView.findViewById(R.id.post);
+        ImageButton postImageButton = (ImageButton) customView.findViewById(R.id.post);
         final TextInputEditText happening = (TextInputEditText) customView.findViewById(R.id.happening);
 
 
         postImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!happening.getText().toString().isEmpty()&&!happening.isDirty()){
+                if (!happening.getText().toString().isEmpty() && !happening.isDirty()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if(user.isAnonymous()){
-                        Toast.makeText(getContext(),"You need to Login to be able to post",Toast.LENGTH_LONG)
+                    if (user.isAnonymous()) {
+                        Toast.makeText(getContext(), "You need to Login to be able to post", Toast.LENGTH_LONG)
                                 .show();
                         return;
                     }
@@ -185,23 +207,48 @@ public class FeedFragment extends Fragment {
                     TimeAgo timeAgo = new TimeAgo();
                     String result = timeAgo.getTimeAgo(now);
 
-                    Feed feed1 = new Feed();
+                    final Feed feed1 = new Feed();
                     feed1.setName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                     feed1.setPictureURL(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
                     feed1.setTimestamp(now.toString());
                     feed1.setPost(happening.getText().toString());
                     feed1.setLink("");
-                    feed1.setImage("");
                     feed1.setPoster(user.getUid());
-                    DatabaseReference f =feedRef.push();
-                    feed1.setKey(f.getKey());
-                    f.setValue(feed1);
-                    happening.getText().clear();
-                    dialog.dismiss();
 
-                }else{
-                    Toast.makeText(getActivity(),"Action not allowed",Toast.LENGTH_SHORT)
-                    .show();
+                    if(imagebitmap!=null) {
+                        final StorageReference image = storageRef.child("images/" + user.getUid() + new Date().toString() + ".jpg");
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        imagebitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
+
+                        UploadTask uploadTask = image.putBytes(data);
+
+                        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                feed1.setImage(taskSnapshot.getDownloadUrl().toString());
+                                DatabaseReference f = feedRef.push();
+                                feed1.setKey(f.getKey());
+                                f.setValue(feed1);
+                                imagebitmap = null;
+                                imgView.setVisibility(View.GONE);
+                                happening.getText().clear();
+                                dialog.dismiss();
+                            }
+                        });
+                    }else{
+                        DatabaseReference f = feedRef.push();
+
+                        feed1.setKey(f.getKey());
+                        f.setValue(feed1);
+                        happening.getText().clear();
+                        dialog.dismiss();
+                    }
+
+
+                } else {
+                    Toast.makeText(getActivity(), "Action not allowed", Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
         });
@@ -212,10 +259,18 @@ public class FeedFragment extends Fragment {
             public void onClick(View view) {
                 menu.collapse();
 
+                imgView = (AppCompatImageView) customView.findViewById(R.id.postimg);
+                ImageButton addphoto = (ImageButton) customView.findViewById(R.id.addPhoto);
 
-
-         dialog = new BottomDialog.Builder(getContext())
+                addphoto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onPickImage(imgView);
+                    }
+                });
+                dialog = new BottomDialog.Builder(getContext())
                         .setTitle("New Post")
+                        .setIcon(R.drawable.ic_create_black_24dp)
                         .setCustomView(customView)
 
                         .show();
@@ -238,15 +293,16 @@ public class FeedFragment extends Fragment {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        if(dataSnapshot.exists()) {
+                        if (dataSnapshot.exists()) {
                             User user = dataSnapshot.getValue(User.class);
                             post.setPictureURL(user.getPhotoUrl());
                             feeds.add(0, post);
                             feedFragmentAdapter.notifyDataSetChanged();
-                        }
-                        else{
+                            animatorAdapter.notifyDataSetChanged();
+                        } else {
                             feeds.add(0, post);
                             feedFragmentAdapter.notifyDataSetChanged();
+                            animatorAdapter.notifyDataSetChanged();
                         }
 
                     }
@@ -284,18 +340,23 @@ public class FeedFragment extends Fragment {
         return v;
     }
 
-    void init(){
+    public void onPickImage(View view) {
+        // Click on image button
+        ImagePicker.pickImage(this, "Select your image:");
+    }
+
+    void init() {
 
 
         feedRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e("Count " ,""+dataSnapshot.getChildrenCount());
+                Log.e("Count ", "" + dataSnapshot.getChildrenCount());
 
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Feed post = postSnapshot.getValue(Feed.class);
                     post.setTimestamp(new TimeAgo().getTimeAgo(new Date(post.getTimestamp())));
-                    feeds.add(0,post);
+                    feeds.add(0, post);
                     feedFragmentAdapter.notifyDataSetChanged();
                     Log.e("Get Datawe", post.getKey());
                 }
@@ -312,4 +373,11 @@ public class FeedFragment extends Fragment {
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bitmap bitmap = ImagePicker.getImageFromResult(getContext(), requestCode, resultCode, data);
+        imagebitmap = bitmap;
+        imgView.setImageBitmap(bitmap);
+        imgView.setVisibility(View.VISIBLE);
+    }
 }
