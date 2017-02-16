@@ -1,5 +1,6 @@
 package com.othree.wajeun;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import com.thedazzler.droidicon.IconicFontDrawable;
 
 import mehdi.sakout.aboutpage.AboutPage;
 import mehdi.sakout.aboutpage.Element;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class AboutActivity extends AppCompatActivity {
 
@@ -46,4 +48,5 @@ public class AboutActivity extends AppCompatActivity {
 
         setContentView(aboutPage);
     }
+
 }

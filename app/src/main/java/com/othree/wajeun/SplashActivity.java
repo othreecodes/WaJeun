@@ -46,9 +46,6 @@ public class SplashActivity extends AwesomeSplash {
         @Override
         public void animationsFinished() {
 
-            SharedPreferences prefs =getSharedPreferences("preferences",0);
-
-            String authToken = prefs.getString("authToken","nil");
             if(new Preferences(this).isWelcomeShown()){
                 //welcome screen already shown.... load main activity
                 Intent in= new Intent(this,MainActivity.class);

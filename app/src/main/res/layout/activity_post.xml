@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textContainer"
         android:layout_width="match_parent"
@@ -20,7 +21,6 @@
         android:background="@color/primary_text"
         android:textColor="@color/white"
         android:gravity="top"
-
         android:inputType="textFilter|textMultiLine"
         android:maxLength="200"
         android:minHeight="102dp"
@@ -109,5 +109,26 @@
         android:src="@drawable/place"
         android:visibility="gone"
         android:maxWidth="50dp"/>
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:id="@+id/pgb"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:spb_sections_count="4"
+        app:spb_colors="@array/my_colors"
+        app:spb_speed="2.0"
+        android:layout_below="@+id/postimg"
+        app:spb_stroke_width="4dp"
+        app:spb_stroke_separator_length="4dp"
+        app:spb_reversed="false"
+        app:spb_mirror_mode="true"
+        app:spb_progressiveStart_activated="true"
+        app:spb_progressiveStart_speed="1.5"
+        app:spb_progressiveStop_speed="3.4"
+        android:visibility="gone"
+        />
 
 </RelativeLayout>
