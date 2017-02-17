@@ -6,10 +6,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.othree.wajeun.R;
 import com.othree.wajeun.models.Feed;
 
@@ -24,9 +31,15 @@ public class FeedFragmentAdapter extends RecyclerView.Adapter<FeedFragmentAdapte
 
     List<Feed> feeds;
     Context context;
+    FirebaseDatabase database;
+    DatabaseReference likeRef;
     public FeedFragmentAdapter(List<Feed> feeds, Context context){
         this.feeds = feeds;
         this.context = context;
+        database = FirebaseDatabase.getInstance();
+        likeRef = database.getReference("likes");
+
+
     }
 
     @Override
@@ -37,7 +50,7 @@ public class FeedFragmentAdapter extends RecyclerView.Adapter<FeedFragmentAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Feed feed = feeds.get(position);
+        final Feed feed = feeds.get(position);
 
         Glide.with(this.context).load(feed.pictureURL)
                 .placeholder(this.context.getResources().getDrawable(R.drawable.place))
@@ -46,11 +59,27 @@ public class FeedFragmentAdapter extends RecyclerView.Adapter<FeedFragmentAdapte
 
 
 
+        holder.like.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+//                likeRef.child(feed.getKey()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+//                likeRef.child(feed.getKey()).
+            }
+        });
+
+
 
         holder.name.setText(feed.name);
         holder.timestamp.setText(feed.timestamp);
 
-        holder.txtStatusMsg.setText(feed.post);
+        holder.like.setLiked(feed.isLiked());
+
+            holder.txtStatusMsg.setVisibility(View.VISIBLE);
+            holder.txtStatusMsg.setText(feed.post);
 
         if(!feed.image.isEmpty()) {
             Glide.with(this.context).load(feed.image)
@@ -88,6 +117,10 @@ public class FeedFragmentAdapter extends RecyclerView.Adapter<FeedFragmentAdapte
         TextView txtUrl;
         @Bind(R.id.feedImage1)
         ImageView feedImage;
+        @Bind(R.id.like)
+        LikeButton like;
+        @Bind(R.id.comment)
+        ImageButton comment;
 
         public ViewHolder(View itemView) {
             super(itemView);

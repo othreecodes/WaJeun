@@ -15,6 +15,16 @@ public class Feed {
     public String timestamp;
     public String poster;
 
+    public boolean liked;
+
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
+
     public Feed(){}
 
     public String getPoster() {

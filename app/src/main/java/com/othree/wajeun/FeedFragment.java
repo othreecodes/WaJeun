@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -97,6 +99,7 @@ public class FeedFragment extends Fragment {
     StorageReference storageRef;
     DatabaseReference usersREF;
     StorageReference imagesRef;
+    DatabaseReference likeRef;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,7 +110,7 @@ public class FeedFragment extends Fragment {
         database = FirebaseDatabase.getInstance();
         feedRef = database.getReference("feeds");
         usersREF = database.getReference("users");
-
+        likeRef = database.getReference("likes");
         storage = FirebaseStorage.getInstance();
 
         storageRef = storage.getReferenceFromUrl("gs://chow-37ac2.appspot.com");
@@ -207,6 +210,8 @@ public class FeedFragment extends Fragment {
                                 .show();
                         return;
                     }
+
+                    happening.onEditorAction(EditorInfo.IME_ACTION_DONE);
 
                     Date now = new Date();
 
@@ -308,10 +313,13 @@ public class FeedFragment extends Fragment {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 final Feed post = dataSnapshot.getValue(Feed.class);
 
-               String time =  com.github.marlonlom.utilities.timeago.TimeAgo.using(new Date(post.getTimestamp()).getTime());
+                post.key = dataSnapshot.getKey();
+
+                String time =  com.github.marlonlom.utilities.timeago.TimeAgo.using(new Date(post.getTimestamp()).getTime());
 
                 post.setTimestamp(time);
 
+                Log.d("WHAT IS S",dataSnapshot.getKey());
 
                 usersREF.child(post.getPoster()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -360,6 +368,7 @@ public class FeedFragment extends Fragment {
 
             }
         });
+
 
         return v;
     }
